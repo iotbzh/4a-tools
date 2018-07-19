@@ -1,0 +1,6 @@
+* push OGG file
+* push WAV file
+* add script for basic aplay on output card
+* add script for basic aplay through loopback (softmixer)
+* add script to play mp3 or ogg using gstreamer (gst-launch-1.0 ...)
+* add script to play with mediaplayer api: list / play / stop / next / prev ...

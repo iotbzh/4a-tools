@@ -1,0 +1,1 @@
+afb-client-demo -d unix:/run/user/0/apis/ws/ahl-4a get_roles ""
