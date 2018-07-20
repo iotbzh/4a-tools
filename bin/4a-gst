@@ -1,0 +1,3 @@
+#!/bin/bash
+
+gst-launch-1.0 -v uridecodebin uri=file:///media/OrchestralBackgroundMusic.mp3 ! audioconvert ! audioresample ! alsasink device=hw:Loopback,0,2

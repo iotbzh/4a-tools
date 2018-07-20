@@ -1,0 +1,23 @@
+#!/bin/bash
+
+WS4A=unix:/run/user/0/apis/ws/ahl-4a
+
+afb-client-demo -H -d $WS4A get_roles ""
+
+# commandes HAL manager:
+# 4a-hal-manager loaded
+# 4a-hal-manager loaded { "verbose": true } <= +metadata
+# 4a-hal-manager loaded { "all": true } <= hals avec un json
+# 4a-hal-manager loaded { "all": true, "verbose":true }
+
+# open/close  multimedia
+#afb-client-demo -H -d $WS4A << EOF
+#multimedia { "action":"open" }
+#multimedia { "action":"close" }
+#EOF
+
+# volume  multimedia
+#afb-client-demo -H -d $WS4A << EOF
+#multimedia { "action":"open" }
+#multimedia { "action":"close" }
+#EOF
