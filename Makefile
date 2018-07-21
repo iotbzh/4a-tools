@@ -14,13 +14,13 @@ help:
 	@echo "* make install DESTDIR=/usr"
 	@echo "  changes the destination dir (in this example, the scripts will be installed in /usr/bin)"
 
-install: $(MEDIA)
+install: $(SCRIPTS) $(MEDIA)
 	@echo "Installing audio scripts $(notdir $(SCRIPTS)) into $(DESTDIR)/bin"
 	mkdir -p $(DESTDIR)/bin 
 	install $(SCRIPTS) -m 750 $(DESTDIR)/bin
-	@echo "Installing audio test files $(notdir $(MEDIA)) into $(DESTDIR)/media"
-	mkdir -p $(DESTDIR)/media
-	install $(MEDIA) -m 640 $(DESTDIR)/media
+	@echo "Installing audio test files $(notdir $(MEDIA)) into $(DESTDIR)/4a/media"
+	mkdir -p $(DESTDIR)/4a/media
+	install $(MEDIA) -m 640 $(DESTDIR)/4a/media
 
 clean:
 	@echo "Cleanup done."

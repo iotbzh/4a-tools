@@ -1,8 +1,57 @@
 #!/bin/bash
 
-WS4A=unix:/run/user/0/apis/ws/ahl-4a
+# load shell lib
+. $(dirname $BASH_SOURCE)/lib4a-tools.sh
 
-afb-client-demo -H -d $WS4A get_roles ""
+cmd=$1
+shift
+
+function usage() {
+	log "Usage: $0 <cmd> [opts]"
+	log "Commands:"
+	log "   help: show this help"
+	log "   api <verb> [args]: send direct request to API verb with args"
+	log "   roles: get AHL roles"
+	log "   hals [-a|--all] [-v|--verbose]: get HALs status"
+	log "   mediaplayer ... : interact with mediaplayer service"
+	log "   radio ... : interact with radio service"
+	exit 1
+}
+
+case $cmd in 
+	roles)
+		4a-client ahl-4a get_roles ""
+		;;
+	api)
+		4a-client "$@"
+		;;
+	hals)
+		verbose=false
+		all=false
+		while [[ -n "$1" ]]; do
+			case $1 in
+				-a|--all) all=true;;
+				-v|--verbose) verbose=true;;
+				-av) all=true; verbose=true;;
+			esac
+			shift
+		done
+		4a-client 4a-hal-manager loaded "{'verbose':$verbose,'all':$all}"
+		;;
+	mediaplayer)
+		echo "TODO"
+		;;
+	radio)
+		echo "TODO"
+		;;
+	help|-h|--help)
+		usage
+		;;
+	*)
+		error "Invalid command"
+		usage
+		;;
+esac
 
 # commandes HAL manager:
 # 4a-hal-manager loaded

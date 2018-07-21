@@ -1,51 +1,50 @@
 #!/bin/bash
 
+# load shell lib
+. $(dirname $BASH_SOURCE)/lib4a-tools.sh
+
 set -o pipefail
 
-ERR="\\e[31mERROR\\e[0m"
-WRN="\\e[33mWARNING\\e[0m"
-SUC="\\e[32mSUCCESS\\e[0m"
-
-function cout {
-	echo -e "$*"
-}
+ERR="${color_red}ERROR${color_none}"
+WRN="${color_yellow}WARNING${color_none}"
+SUC="${color_green}SUCCESS${color_none}"
 
 EXIT_CODE=0
 
-SOUND_CARDS=$( LANG="C" aplay -l | grep -oEe "^card\\s+[^\\[]+" | cut -d':' -f2 | uniq )
+# ------------------- enumerate sound cards ------------------------
 
-cout " -- Is snd-aloop is available?"
+log "---- Audio cards detected ----"
+LANG="C" aplay -l | grep -oEe "^card\\s+[^\\[]+" | sort -u 
+
+# -------------------- snd-aloop ------------------------
+
+log ""
+log "---- snd-aloop driver availability ----"
 if zcat /proc/config.gz | grep "CONFIG_SND_ALOOP=y" > /dev/null; then
-	cout "     -- $SUC: Built into the kernel"
+	log "$SUC: Built into the kernel"
 else
-	cout "     -- $WRN: Not built into the kernel, devices order can randomly change!"
+	log "$WRN: Not built into the kernel, devices order can randomly change!"
 	if zcat /proc/config.gz | grep "CONFIG_SND_ALOOP=m" > /dev/null; then
-		cout "     -- $SUC: snd-aloop is provided!"
+		log "$SUC: snd-aloop is provided!"
 		if lsmod | grep "snd_aloop" > /dev/null; then
-			cout "     -- $SUC: snd-aloop is loaded!"
+			log "$SUC: snd-aloop is loaded!"
 		else
-			cout "     -- $ERR: snd-aloop is not loaded! 4a-softmixer can't work, please load it using: modprobe snd-aloop"
+			log "$ERR: snd-aloop is not loaded! 4a-softmixer can't work, please load it using: modprobe snd-aloop"
 		fi
 	else
-		cout "     -- $ERR: snd-aloop is not provided at all, 4a-softmixer can't work!"
+		log "$ERR: snd-aloop is not provided at all, 4a-softmixer can't work!"
 		EXIT_CODE=1
 	fi
 fi
 
-cout " -- Is 4a running?"
+log ""
+log "---- 4a service status ----"
 if ps x | grep "service-audio-4a" | grep -v "grep" > /dev/null; then
-	cout "     -- $SUC: Service is currently running!"
+	log "$SUC: Service is currently running!"
 else
-	cout "     -- $WRN: Service is not currently running!"
+	log "$WRN: Service is not currently running!"
+	log "It can be started using the following command:"
+	log "systemctl restart *agl-service-audio-4a*.service"
 fi
-
-
-#SERVICE_FILE=$( basename "$( ls "/var/local/lib/systemd/system/afm-service-agl-service-audio-4a--"* )" )
-
-cout
-cout "Found audio cards:"
-for card in $SOUND_CARDS; do
-	cout "    - $card"
-done
 
 exit $EXIT_CODE

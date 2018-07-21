@@ -1,2 +1,17 @@
-# TODO: play using aplay
+#!/bin/bash
 
+# load shell lib
+. $(dirname $BASH_SOURCE)/lib4a-tools.sh
+
+function usage() {
+	log "Usage: $0 <role:file1> [role:file2 ...]"
+	log "Available roles:"
+	exit 1
+}
+
+[[ $# == 0 ]] && usage
+
+for x in "$@"; do
+	log "Playing $x ..."
+	aplay -D Loopback,0,2 $x
+done
