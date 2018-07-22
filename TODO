@@ -1,7 +1,0 @@
-* push OGG file
-* finish script 4a-api (calls to AHL/Hal-manager)
-* add script for basic aplay on role or device
-* add script for basic gst-launch on role or device
-* add script for speaker test on role or device
-* add script to play with mediaplayer api: list / play / stop / next / prev ...
-* add script to play with radio api

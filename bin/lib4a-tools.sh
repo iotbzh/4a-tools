@@ -26,8 +26,9 @@ function 4a-client() {
 	# get port for audio service
 	local port=""
 	local token="HELLO"
+	local unitfile=$( ls /var/local/lib/systemd/system/afm-service-agl-service-audio-4a*.service )
 
-	if [ -f "/var/local/lib/systemd/system/afm-service-agl-service-audio-4a*.service" ]; then
+	if [ -f "$unitfile" ]; then
 		log "Detected systemd unit file!"
 		port=$( grep -sr X-AFM-http /var/local/lib/systemd/system/afm-service-agl-service-audio-4a*.service | cut -f2 -d'=' )
 		log "Port detected: $port"
