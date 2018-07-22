@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# load shell lib
+. $(dirname $BASH_SOURCE)/lib4a-tools.sh
+
+function usage() {
+	log "$0 <file> [device] [role]"
+	log "    - 'device' can be hw:X where X is a number or the device name."
+	log "      It can also be hw:X,Y,Z, it is used when playing on the loopback card"
+	log "      which is the 4a default sink."
+	log "      Default: hw:Loopback,0,2"
+	log "    - 'role' is the 4a role to use. In future version it will be guessed"
+	log "      based on the device. Use '4a-api roles' to get a list of known roles"
+	log "      Default: multimedia"
+}
+
+if [ "$#" == "0" ]; then
+	error "No file to play!"
+	usage
+fi
+
+FILEPATH="$( realpath "$1" )"
+DEVICE=${2:-'hw:Loopback,0,2'}
+ROLE=${3:-'multimedia'}
+
+CARDID=$( echo "$DEVICE" | cut -d':' -f2 | cut -d',' -f1 )
+
+log "Play '$FILEPATH' on '$DEVICE'"
+
+LOOPBACK_CARDID=$( LANG="C" aplay -l | grep -oEe "^card\\s+[0-9]: Loopback" | uniq | grep -oEe "[0-9]+" )
+if [ "$CARDID" == "Loopback" ] || [ "$CARDID" == "$LOOPBACK_CARDID" ]; then
+	IS_4A_DEVICE=1
+else
+	IS_4A_DEVICE=0
+fi
+
+if [ "$IS_4A_DEVICE" == "1" ]; then
+	log "The selected card (hw:$CARDID) is handle by 4a, call open on '$ROLE'"
+	4a-client ahl-4a "$ROLE" '{ "action": "open" }'
+
+	# BUG: afb-client-demo does not exit an exit code different from zero when api return an error
+	#if [ "$?" -ne "0" ]; then
+	#	exit -1
+	#fi
+fi
+
+if [ "$DEBUG" == "1" ]; then
+	gst-launch-1.0 -v uridecodebin uri="file://$FILEPATH" ! audioconvert ! audioresample ! alsasink device="$DEVICE"
+else
+	gst-launch-1.0 -v uridecodebin uri="file://$FILEPATH" ! audioconvert ! audioresample ! alsasink device="$DEVICE" > /dev/null
+fi
+
+if [ "$IS_4A_DEVICE" == "1" ]; then
+	log "The selected card (hw;$CARDID) is handled by 4a, call close on '$ROLE'"
+	4a-client ahl-4a "$ROLE" '{ "action": "close" }'
+fi
+
