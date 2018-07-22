@@ -24,10 +24,21 @@ function debug() { [[ "$DEBUG" == 1 ]] && echo "${color_blue}DEBUG:" "$@" "${col
 
 function 4a-client() {
 	# get port for audio service
-	local port=$(grep -sr X-AFM-http /var/local/lib/systemd/system/afm-service-agl-service-audio-4a*.service | cut -f2 -d'=')
+	local port=""
+	local token="HELLO"
 
-	debug "Detected 4A service on port $port"
-	afb-client-demo -H "localhost:$port/api?token=HELLO&uuid=magic" "$@"
+	if [ -f "/var/local/lib/systemd/system/afm-service-agl-service-audio-4a*.service" ]; then
+		log "Detected systemd unit file!"
+		port=$( grep -sr X-AFM-http /var/local/lib/systemd/system/afm-service-agl-service-audio-4a*.service | cut -f2 -d'=' )
+		log "Port detected: $port"
+	else
+		log "No systemd unit file detected, assuming running on host, please set 'API_4A_PORT' and 'API_4A_TOKEN' environment variables to correct values!"
+		port=${API_4A_PORT:-1234}
+		token=${API_4A_TOKEN:-"HELLO"}
+		log "Port: $port, token: $token"
+	fi
+
+	afb-client-demo -H "localhost:$port/api?token=$token&uuid=magic" "$@"
 }
 
 function 4a-roles() {
