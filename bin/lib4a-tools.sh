@@ -46,3 +46,11 @@ function 4a-roles() {
 	4a-client ahl-4a get_roles "" | tail -n +2 | jq '.response|.[]'
 }
 
+function mediascanner-client() {
+	afb-client-demo -H -d unix:/run/user/0/apis/ws/mediascanner "$@"
+}
+function mediaplayer-client() {
+	afb-client-demo -H -d unix:/run/user/0/apis/ws/mediaplayer "$@"
+}
+
+

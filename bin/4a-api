@@ -13,7 +13,10 @@ function usage() {
 	log "   api <verb> [args]: send direct request to API verb with args"
 	log "   roles: get AHL roles"
 	log "   hals [-a|--all] [-v|--verbose]: get HALs status"
+	log "   mediascanner ... : interact with mediascanner service"
+	log "      example: 4a-api mediascanner media_result \"\""
 	log "   mediaplayer ... : interact with mediaplayer service"
+	log "      example: 4a-api mediaplayer playlist \"\""
 	log "   radio ... : interact with radio service"
 	exit 1
 }
@@ -38,8 +41,11 @@ case $cmd in
 		done
 		4a-client 4a-hal-manager loaded "{'verbose':$verbose,'all':$all}"
 		;;
+	mediascanner)
+		mediascanner-client "$@"
+		;;
 	mediaplayer)
-		echo "TODO"
+		mediaplayer-client "$@"
 		;;
 	radio)
 		echo "TODO"
