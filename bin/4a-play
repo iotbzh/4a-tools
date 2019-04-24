@@ -19,8 +19,15 @@ if [ "$#" == "0" ]; then
 	usage
 fi
 
+avirt=$(cat /proc/modules | grep avirt_ap_loopback | head -n1 | cut -d ' ' -f 1)
+if [ x$avirt == x ]; then
+hwdev=Loopback,0,2
+else
+hwdev=avirt,0
+fi
+
 FILEPATH="$( realpath "$1" )"
-DEVICE=${2:-'hw:Loopback,0,2'}
+DEVICE=${2:-"hw:$hwdev"}
 ROLE=${3:-'multimedia'}
 
 CARDID=$( echo "$DEVICE" | cut -d':' -f2 | cut -d',' -f1 )
